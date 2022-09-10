@@ -55,12 +55,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		start, end := m.paginator.GetSliceBounds(len(m.items))
 		switch keypress := msg.String(); keypress {
 		case "down", "j", "ctrl+n":
-			m.index = clamp(m.index+1, 0, len(m.items)-1)
+			m.index++
+			if m.index >= len(m.items) {
+				m.index = 0
+				m.paginator.Page = 0
+			}
 			if m.index >= end {
 				m.paginator.NextPage()
 			}
 		case "up", "k", "ctrl+p":
-			m.index = clamp(m.index-1, 0, len(m.items)-1)
+			m.index--
+			if m.index < 0 {
+				m.index = len(m.items) - 1
+				m.paginator.Page = m.paginator.TotalPages - 1
+			}
 			if m.index < start {
 				m.paginator.PrevPage()
 			}
@@ -70,14 +78,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "left", "h", "ctrl+b":
 			m.index = clamp(m.index-m.height, 0, len(m.items)-1)
 			m.paginator.PrevPage()
+		case "G":
+			m.index = len(m.items) - 1
+			m.paginator.Page = m.paginator.TotalPages - 1
+		case "g":
+			m.index = 0
+			m.paginator.Page = 0
 		case "a":
 			if m.limit <= 1 {
 				break
 			}
 			for i := range m.items {
+				if m.numSelected >= m.limit {
+					break // do not exceed given limit
+				}
+				if m.items[i].selected {
+					continue
+				}
 				m.items[i].selected = true
+				m.numSelected++
 			}
-			m.numSelected = len(m.items)
 		case "A":
 			if m.limit <= 1 {
 				break

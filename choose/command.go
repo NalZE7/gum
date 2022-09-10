@@ -32,11 +32,6 @@ func (o Options) Run() error {
 		o.Options = strings.Split(strings.TrimSpace(input), "\n")
 	}
 
-	var items = make([]item, len(o.Options))
-	for i, option := range o.Options {
-		items[i] = item{text: option, selected: false}
-	}
-
 	// We don't need to display prefixes if we are only picking one option.
 	// Simply displaying the cursor is enough.
 	if o.Limit == 1 && !o.NoLimit {
@@ -49,6 +44,22 @@ func (o Options) Run() error {
 	// are so let's set the limit to the number of options.
 	if o.NoLimit {
 		o.Limit = len(o.Options)
+	}
+
+	// Keep track of the selected items.
+	currentSelected := 0
+	// Check if selected items should be used.
+	hasSelectedItems := o.Limit > 1 && len(o.Selected) > 0
+
+	var items = make([]item, len(o.Options))
+	for i, option := range o.Options {
+		// Check if the option should be selected.
+		isSelected := hasSelectedItems && currentSelected < o.Limit && arrayContains(o.Selected, option)
+		// If the option is selected then increment the current selected count.
+		if isSelected {
+			currentSelected++
+		}
+		items[i] = item{text: option, selected: isSelected}
 	}
 
 	// Use the pagination model to display the current and total number of
@@ -78,6 +89,7 @@ func (o Options) Run() error {
 		cursorStyle:       o.CursorStyle.ToLipgloss(),
 		itemStyle:         o.ItemStyle.ToLipgloss(),
 		selectedItemStyle: o.SelectedItemStyle.ToLipgloss(),
+		numSelected:       currentSelected,
 	}, tea.WithOutput(os.Stderr)).StartReturningModel()
 
 	if err != nil {
@@ -98,7 +110,7 @@ func (o Options) Run() error {
 		}
 	}
 
-	fmt.Println(strings.TrimSuffix(s.String(), "\n"))
+	fmt.Print(s.String())
 
 	return nil
 }
@@ -107,4 +119,14 @@ func (o Options) Run() error {
 func (o Options) BeforeReset(ctx *kong.Context) error {
 	style.HideFlags(ctx)
 	return nil
+}
+
+// Check if an array contains a value.
+func arrayContains(strArray []string, value string) bool {
+	for _, str := range strArray {
+		if str == value {
+			return true
+		}
+	}
+	return false
 }

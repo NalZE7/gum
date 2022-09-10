@@ -199,7 +199,7 @@ gum input --password > password.text
 
 Prompt for some multi-line text.
 
-Note: `CTRL+D` is used to complete text entry. `CTRL+C` and `esc` will cancel.
+Note: `CTRL+D` and `esc` are used to complete text entry. `CTRL+C` will cancel.
 
 ```bash
 gum write > story.text
@@ -428,6 +428,22 @@ git log --oneline | gum filter | cut -d' ' -f1 # | copy
   <source media="(max-width: 600px)" srcset="https://stuff.charm.sh/gum/pick-commit.gif">
   <source media="(min-width: 600px)" width="600" srcset="https://stuff.charm.sh/gum/pick-commit.gif">
   <img src="https://stuff.charm.sh/gum/pick-commit.gif" alt="Picking a commit with gum filter" />
+</picture>
+
+#### Skate Passwords
+
+Build a simple (encrypted) password selector with [Skate](https://github.com/charmbracelet/skate).
+
+Save all your passwords to [Skate](https://github.com/charmbracelet/skate) with `skate set github@pass.db PASSWORD`, etc...
+
+```
+skate list -k | gum filter | xargs skate get
+```
+
+<picture>
+  <source media="(max-width: 600px)" srcset="https://stuff.charm.sh/gum/skate-pass.gif">
+  <source media="(min-width: 600px)" width="600" srcset="https://stuff.charm.sh/gum/skate-pass.gif">
+  <img src="https://stuff.charm.sh/gum/skate-pass.gif" alt="Selecting a skate value with gum" />
 </picture>
 
 #### Choose packages to uninstall
