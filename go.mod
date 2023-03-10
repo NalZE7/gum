@@ -11,6 +11,6 @@ require (
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/muesli/roff v0.1.0
-	github.com/muesli/termenv v0.11.1-0.20220212125758-44cd13922739
+	github.com/muesli/termenv v0.15.1
 	github.com/sahilm/fuzzy v0.1.0
 )
